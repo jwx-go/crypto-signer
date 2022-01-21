@@ -18,6 +18,11 @@ import (
 var _ crypto.Signer = &awssigner.RSA{}
 
 func ExampleRSA() {
+	kid := os.Getenv(`AWS_KMS_KEY_ID_RSA`)
+	if kid == "" {
+		// Don't run unless we're given the Key ID
+		return
+	}
 	// Make sure to set AWS_* environment variable, if you
 	// need to configure them.
 	awscfg, err := config.LoadDefaultConfig(
@@ -27,10 +32,6 @@ func ExampleRSA() {
 		panic(err.Error())
 	}
 
-	kid := os.Getenv(`AWS_KMS_KEY_ID_RSA`)
-	if kid == "" {
-		panic(`missing AWS_KMS_KEY_ID_RSA`)
-	}
 	payload := []byte("obla-di-obla-da")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
@@ -56,6 +57,11 @@ func ExampleRSA() {
 }
 
 func ExampleECDSA() {
+	kid := os.Getenv(`AWS_KMS_KEY_ID_ECDSA`)
+	if kid == "" {
+		// Don't run unless we're given the Key ID
+		return
+	}
 	// Make sure to set AWS_* environment variable, if you
 	// need to configure them.
 	awscfg, err := config.LoadDefaultConfig(
@@ -65,10 +71,6 @@ func ExampleECDSA() {
 		panic(err.Error())
 	}
 
-	kid := os.Getenv(`AWS_KMS_KEY_ID_ECDSA`)
-	if kid == "" {
-		panic(`missing AWS_KMS_KEY_ID_ECDSA`)
-	}
 	payload := []byte("obla-di-obla-da")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
