@@ -17,7 +17,7 @@ import (
 
 var _ crypto.Signer = &awssigner.RSA{}
 
-func Example() {
+func ExampleRSA() {
 	// Make sure to set AWS_* environment variable, if you
 	// need to configure them.
 	awscfg, err := config.LoadDefaultConfig(
@@ -27,9 +27,9 @@ func Example() {
 		panic(err.Error())
 	}
 
-	kid := os.Getenv(`AWS_KMS_KEY_ID`)
+	kid := os.Getenv(`AWS_KMS_KEY_ID_RSA`)
 	if kid == "" {
-		panic(`missing AWS_KMS_KEY_ID`)
+		panic(`missing AWS_KMS_KEY_ID_RSA`)
 	}
 	payload := []byte("obla-di-obla-da")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
@@ -45,6 +45,44 @@ func Example() {
 	}
 
 	verified, err := jws.Verify(signed, jwa.RS256, sv.WithContext(ctx))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if bytes.Compare(payload, verified) != 0 {
+		panic("payload and verified does not match")
+	}
+	//OUTPUT:
+}
+
+func ExampleECDSA() {
+	// Make sure to set AWS_* environment variable, if you
+	// need to configure them.
+	awscfg, err := config.LoadDefaultConfig(
+		context.Background(),
+	)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	kid := os.Getenv(`AWS_KMS_KEY_ID_ECDSA`)
+	if kid == "" {
+		panic(`missing AWS_KMS_KEY_ID_ECDSA`)
+	}
+	payload := []byte("obla-di-obla-da")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	sv := awssigner.NewECDSA(kms.NewFromConfig(awscfg)).
+		WithAlgorithm(types.SigningAlgorithmSpecEcdsaSha256).
+		WithKeyID(kid)
+
+	signed, err := jws.Sign(payload, jwa.ES256, sv.WithContext(ctx))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	verified, err := jws.Verify(signed, jwa.ES256, sv.WithContext(ctx))
 	if err != nil {
 		panic(err.Error())
 	}
