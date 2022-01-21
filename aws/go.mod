@@ -29,5 +29,3 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/crypto v0.0.0-20201217014255-9d1352758620 // indirect
 )
-
-replace github.com/lestrrat-go/jwx => ../../../lestrrat-go/jwx
