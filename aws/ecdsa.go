@@ -3,6 +3,7 @@ package awssigner
 import (
 	"context"
 	"crypto"
+	"crypto/ecdsa"
 	"crypto/x509"
 	"fmt"
 	"io"
@@ -12,9 +13,18 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/kms/types"
 )
 
+// Cache is used internally to store items that are frequently
+// accessed. In particular, the public key is accessed for both
+// signing _and_ verifying, and is cached if you provide storage for it.
+type Cache interface {
+	Get(interface{}) (interface{}, bool)
+	Set(interface{}, interface{})
+}
+
 type ECDSA struct {
 	alg    types.SigningAlgorithmSpec
 	client *kms.Client
+	cache  Cache
 	ctx    context.Context
 	kid    string
 }
@@ -33,6 +43,7 @@ func NewECDSA(client *kms.Client) *ECDSA {
 func (sv *ECDSA) WithAlgorithm(alg types.SigningAlgorithmSpec) *ECDSA {
 	return &ECDSA{
 		alg:    alg,
+		cache:  sv.cache,
 		client: sv.client,
 		ctx:    sv.ctx,
 		kid:    sv.kid,
@@ -44,6 +55,7 @@ func (sv *ECDSA) WithAlgorithm(alg types.SigningAlgorithmSpec) *ECDSA {
 func (sv *ECDSA) WithContext(ctx context.Context) *ECDSA {
 	return &ECDSA{
 		alg:    sv.alg,
+		cache:  sv.cache,
 		client: sv.client,
 		ctx:    ctx,
 		kid:    sv.kid,
@@ -55,9 +67,28 @@ func (sv *ECDSA) WithContext(ctx context.Context) *ECDSA {
 func (sv *ECDSA) WithKeyID(kid string) *ECDSA {
 	return &ECDSA{
 		alg:    sv.alg,
+		cache:  sv.cache,
 		client: sv.client,
 		ctx:    sv.ctx,
 		kid:    kid,
+	}
+}
+
+// WithCache specifies the cache storage for frequently used items.
+// Currently only the public key is cached.
+//
+// If it is not specified, nothing will be cached.
+//
+// Since it would be rather easy for the key in AWS KMS and the cache
+// to be out of sync, make sure to either purge the cache periodically
+// or use a cache with some sort of auto-eviction mechanism.
+func (sv *ECDSA) WithCache(c Cache) *ECDSA {
+	return &ECDSA{
+		alg:    sv.alg,
+		cache:  c,
+		client: sv.client,
+		ctx:    sv.ctx,
+		kid:    sv.kid,
 	}
 }
 
@@ -103,6 +134,16 @@ func (sv *ECDSA) GetPublicKey() (crypto.PublicKey, error) {
 	if sv.kid == "" {
 		return nil, fmt.Errorf(`aws.ECDSA.Sign() requires the key ID`)
 	}
+
+	if cache := sv.cache; cache != nil {
+		v, ok := cache.Get(sv.kid)
+		if ok {
+			if pubkey, ok := v.(*ecdsa.PublicKey); ok {
+				return pubkey, nil
+			}
+		}
+	}
+
 	if sv.ctx == nil {
 		return nil, fmt.Errorf(`aws.ECDSA.Sign() required context.Context`)
 	}
@@ -122,6 +163,10 @@ func (sv *ECDSA) GetPublicKey() (crypto.PublicKey, error) {
 	key, err := x509.ParsePKIXPublicKey(output.PublicKey)
 	if err != nil {
 		return nil, fmt.Errorf(`failed to parse key: %w`, err)
+	}
+
+	if cache := sv.cache; cache != nil {
+		cache.Set(sv.kid, key)
 	}
 
 	return key, nil

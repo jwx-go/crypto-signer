@@ -56,6 +56,25 @@ func ExampleRSA() {
 	//OUTPUT:
 }
 
+type DumbCache struct {
+	storage map[interface{}]interface{}
+}
+
+func NewDumbCache() *DumbCache {
+	return &DumbCache{
+		storage: make(map[interface{}]interface{}),
+	}
+}
+
+func (c *DumbCache) Get(key interface{}) (interface{}, bool) {
+	v, ok := c.storage[key]
+	return v, ok
+}
+
+func (c *DumbCache) Set(key, value interface{}) {
+	c.storage[key] = value
+}
+
 func ExampleECDSA() {
 	kid := os.Getenv(`AWS_KMS_KEY_ID_ECDSA`)
 	if kid == "" {
@@ -77,7 +96,8 @@ func ExampleECDSA() {
 
 	sv := awssigner.NewECDSA(kms.NewFromConfig(awscfg)).
 		WithAlgorithm(types.SigningAlgorithmSpecEcdsaSha256).
-		WithKeyID(kid)
+		WithKeyID(kid).
+		WithCache(NewDumbCache())
 
 	signed, err := jws.Sign(payload, jwa.ES256, sv.WithContext(ctx))
 	if err != nil {
