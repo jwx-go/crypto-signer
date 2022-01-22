@@ -49,7 +49,10 @@ func Example() {
 	}
 
 	ks := gcpsigner.KeySpec{
-		// Populate this accordingly
+		Project:  os.Getenv(`GCP_SIGNER_PROJECT`),
+		Location: os.Getenv(`GCP_SIGNER_LOCATION`),
+		KeyRing:  os.Getenv(`GCP_SIGNER_KEY_RING`),
+		Key:      os.Getenv(`GCP_SIGNER_KEY`),
 	}
 
 	s := gcpsigner.New(client).
