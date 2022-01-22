@@ -43,15 +43,15 @@ func (cs *Signer) Sign(_ io.Reader, digest []byte, opts crypto.SignerOpts) ([]by
 	switch key := key.(type) {
 	case *rsa.PublicKey:
 		switch key.Size() {
-		case 32: //256
+		case 256:
 			pbdigest.Digest = &kmspb.Digest_Sha256{
 				Sha256: digest,
 			}
-		case 48: //384
+		case 384:
 			pbdigest.Digest = &kmspb.Digest_Sha384{
 				Sha384: digest,
 			}
-		case 64: //512
+		case 512:
 			pbdigest.Digest = &kmspb.Digest_Sha512{
 				Sha512: digest,
 			}
@@ -60,15 +60,15 @@ func (cs *Signer) Sign(_ io.Reader, digest []byte, opts crypto.SignerOpts) ([]by
 		}
 	case *ecdsa.PublicKey:
 		switch size := key.Curve.Params().BitSize; size {
-		case 32: //256
+		case 256:
 			pbdigest.Digest = &kmspb.Digest_Sha256{
 				Sha256: digest,
 			}
-		case 48: //384
+		case 384:
 			pbdigest.Digest = &kmspb.Digest_Sha384{
 				Sha384: digest,
 			}
-		case 64: //512
+		case 512:
 			pbdigest.Digest = &kmspb.Digest_Sha512{
 				Sha512: digest,
 			}
