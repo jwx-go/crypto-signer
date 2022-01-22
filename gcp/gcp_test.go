@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"crypto"
+	"log"
 	"os"
 	"time"
 
@@ -55,6 +56,7 @@ func Example() {
 		Key:      os.Getenv(`GCP_SIGNER_KEY`),
 	}
 
+	log.Printf(ks.String())
 	s := gcpsigner.New(client).
 		WithName(ks.String()).
 		WithCache(NewDumbCache())
