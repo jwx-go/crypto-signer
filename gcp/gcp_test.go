@@ -34,7 +34,7 @@ func (c *DumbCache) Set(key, value interface{}) {
 	c.storage[key] = value
 }
 
-func Example() {
+func ExampleRSA() {
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		return
 	}
@@ -52,7 +52,7 @@ func Example() {
 		Project:  os.Getenv(`GCP_SIGNER_PROJECT`),
 		Location: os.Getenv(`GCP_SIGNER_LOCATION`),
 		KeyRing:  os.Getenv(`GCP_SIGNER_KEY_RING`),
-		Key:      os.Getenv(`GCP_SIGNER_KEY`),
+		Key:      os.Getenv(`GCP_SIGNER_RSA_KEY`),
 	}
 
 	s := gcpsigner.New(client).
@@ -65,6 +65,47 @@ func Example() {
 	}
 
 	verified, err := jws.Verify(signed, jwa.RS256, s.WithContext(ctx))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	if bytes.Compare(payload, verified) != 0 {
+		panic("payload and verified does not match")
+	}
+	//OUTPUT:
+}
+
+func ExampleECDSA() {
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		return
+	}
+
+	payload := []byte("obla-di-obla-da")
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+
+	client, err := kms.NewKeyManagementClient(ctx)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	ks := gcpsigner.KeySpec{
+		Project:  os.Getenv(`GCP_SIGNER_PROJECT`),
+		Location: os.Getenv(`GCP_SIGNER_LOCATION`),
+		KeyRing:  os.Getenv(`GCP_SIGNER_KEY_RING`),
+		Key:      os.Getenv(`GCP_SIGNER_ECDSA_KEY`),
+	}
+
+	s := gcpsigner.New(client).
+		WithName(ks.String()).
+		WithCache(NewDumbCache())
+
+	signed, err := jws.Sign(payload, jwa.ES256, s.WithContext(ctx))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	verified, err := jws.Verify(signed, jwa.ES256, s.WithContext(ctx))
 	if err != nil {
 		panic(err.Error())
 	}
