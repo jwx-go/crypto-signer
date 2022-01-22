@@ -23,7 +23,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::284916060707:oidc-provider/token.actions.githubusercontent.com
+          role-to-assume: arn:aws:iam::284916060707:role/github-action-kms-test
           aws-region: us-east-1
       - name: Cache Go modules
         uses: actions/cache@v2
