@@ -46,7 +46,8 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
       - run: |
-          env
+          env | sort
+          go env | sort
           cd gcp
           go test 
  
