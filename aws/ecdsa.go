@@ -40,58 +40,6 @@ func NewECDSA(client *kms.Client) *ECDSA {
 	}
 }
 
-func (sv *ECDSA) WithAlgorithm(alg types.SigningAlgorithmSpec) *ECDSA {
-	return &ECDSA{
-		alg:    alg,
-		cache:  sv.cache,
-		client: sv.client,
-		ctx:    sv.ctx,
-		kid:    sv.kid,
-	}
-}
-
-// WithContext creates a new ECDSA object with the context.Context
-// associated with it.
-func (sv *ECDSA) WithContext(ctx context.Context) *ECDSA {
-	return &ECDSA{
-		alg:    sv.alg,
-		cache:  sv.cache,
-		client: sv.client,
-		ctx:    ctx,
-		kid:    sv.kid,
-	}
-}
-
-// WithKeyID creates a new ECDSA object with the key ID
-// associated with it.
-func (sv *ECDSA) WithKeyID(kid string) *ECDSA {
-	return &ECDSA{
-		alg:    sv.alg,
-		cache:  sv.cache,
-		client: sv.client,
-		ctx:    sv.ctx,
-		kid:    kid,
-	}
-}
-
-// WithCache specifies the cache storage for frequently used items.
-// Currently only the public key is cached.
-//
-// If it is not specified, nothing will be cached.
-//
-// Since it would be rather easy for the key in AWS KMS and the cache
-// to be out of sync, make sure to either purge the cache periodically
-// or use a cache with some sort of auto-eviction mechanism.
-func (sv *ECDSA) WithCache(c Cache) *ECDSA {
-	return &ECDSA{
-		alg:    sv.alg,
-		cache:  c,
-		client: sv.client,
-		ctx:    sv.ctx,
-		kid:    sv.kid,
-	}
-}
-
 func (sv *ECDSA) getContext() context.Context {
 	ctx := sv.ctx
 	if ctx == nil {

@@ -30,37 +30,6 @@ func NewRSA(client *kms.Client) *RSA {
 	}
 }
 
-func (sv *RSA) WithAlgorithm(alg types.SigningAlgorithmSpec) *RSA {
-	return &RSA{
-		alg:    alg,
-		client: sv.client,
-		ctx:    sv.ctx,
-		kid:    sv.kid,
-	}
-}
-
-// WithContext creates a new RSA object with the context.Context
-// associated with it.
-func (sv *RSA) WithContext(ctx context.Context) *RSA {
-	return &RSA{
-		alg:    sv.alg,
-		client: sv.client,
-		ctx:    ctx,
-		kid:    sv.kid,
-	}
-}
-
-// WithKeyID creates a new RSA object with the key ID
-// associated with it.
-func (sv *RSA) WithKeyID(kid string) *RSA {
-	return &RSA{
-		alg:    sv.alg,
-		client: sv.client,
-		ctx:    sv.ctx,
-		kid:    kid,
-	}
-}
-
 func (sv *RSA) getContext() context.Context {
 	ctx := sv.ctx
 	if ctx == nil {

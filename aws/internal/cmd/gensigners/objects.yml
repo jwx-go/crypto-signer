@@ -1,0 +1,35 @@
+objects:
+  - name: RSA
+    fields:
+      - name: alg
+        getter: Algorithm
+        type: types.SigningAlgorithmSpec
+      - name: ctx
+        getter: Context
+        type: context.Context
+      - name: kid
+        type: string
+        getter: KeyID
+  - name: ECDSA
+    fields:
+      - name: alg
+        getter: Algorithm
+        type: types.SigningAlgorithmSpec
+      - name: cache
+        getter: Cache
+        type: Cache
+        comment: |
+          WithCache specifies the cache storage for frequently used items.
+          Currently only the public key is cached.
+          
+          If it is not specified, nothing will be cached.
+          
+          Since it would be rather easy for the key in AWS KMS and the cache
+          to be out of sync, make sure to either purge the cache periodically
+          or use a cache with some sort of auto-eviction mechanism.
+      - name: ctx
+        getter: Context
+        type: context.Context
+      - name: kid
+        type: string
+        getter: KeyID
