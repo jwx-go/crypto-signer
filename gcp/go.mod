@@ -4,14 +4,14 @@ go 1.17
 
 require (
 	cloud.google.com/go/kms v1.1.0
-	github.com/lestrrat-go/jwx v1.2.17
+	github.com/lestrrat-go/jwx v1.2.18-0.20220122010323-69118573cc7c
 	google.golang.org/genproto v0.0.0-20211018162055-cf77aa76bad2
 )
 
 require (
 	cloud.google.com/go v0.97.0 // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.0.0-20210816181553-5444fa50b93d // indirect
-	github.com/goccy/go-json v0.9.1 // indirect
+	github.com/goccy/go-json v0.9.3 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect

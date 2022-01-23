@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.13.0
 	github.com/aws/aws-sdk-go-v2/config v1.13.0
 	github.com/aws/aws-sdk-go-v2/service/kms v1.14.0
-	github.com/lestrrat-go/jwx v1.2.17
+	github.com/lestrrat-go/jwx v1.2.18-0.20220122010323-69118573cc7c
 )
 
 require (
