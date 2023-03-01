@@ -8,9 +8,9 @@ import (
 	"time"
 
 	kms "cloud.google.com/go/kms/apiv1"
-	gcpsigner "github.com/jwx-go/crypto-signer/gcp"
-	"github.com/lestrrat-go/jwx/jwa"
-	"github.com/lestrrat-go/jwx/jws"
+	gcpsigner "github.com/jwx-go/crypto-signer/v2/gcp"
+	"github.com/lestrrat-go/jwx/v2/jwa"
+	"github.com/lestrrat-go/jwx/v2/jws"
 )
 
 var _ crypto.Signer = &gcpsigner.Signer{}
@@ -59,12 +59,12 @@ func ExampleRSA() {
 		WithName(ks.String()).
 		WithCache(NewDumbCache())
 
-	signed, err := jws.Sign(payload, jwa.RS256, s.WithContext(ctx))
+	signed, err := jws.Sign(payload, jws.WithKey(jwa.RS256, s.WithContext(ctx)))
 	if err != nil {
 		panic(err.Error())
 	}
 
-	verified, err := jws.Verify(signed, jwa.RS256, s.WithContext(ctx))
+	verified, err := jws.Verify(signed, jws.WithKey(jwa.RS256, s.WithContext(ctx)))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -100,12 +100,12 @@ func ExampleECDSA() {
 		WithName(ks.String()).
 		WithCache(NewDumbCache())
 
-	signed, err := jws.Sign(payload, jwa.ES256, s.WithContext(ctx))
+	signed, err := jws.Sign(payload, jws.WithKey(jwa.ES256, s.WithContext(ctx)))
 	if err != nil {
 		panic(err.Error())
 	}
 
-	verified, err := jws.Verify(signed, jwa.ES256, s.WithContext(ctx))
+	verified, err := jws.Verify(signed, jws.WithKey(jwa.ES256, s.WithContext(ctx)))
 	if err != nil {
 		panic(err.Error())
 	}

@@ -10,9 +10,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/kms"
 	"github.com/aws/aws-sdk-go-v2/service/kms/types"
-	awssigner "github.com/jwx-go/crypto-signer/aws"
-	"github.com/lestrrat-go/jwx/jwa"
-	"github.com/lestrrat-go/jwx/jws"
+	awssigner "github.com/jwx-go/crypto-signer/v2/aws"
+	"github.com/lestrrat-go/jwx/v2/jwa"
+	"github.com/lestrrat-go/jwx/v2/jws"
 )
 
 var _ crypto.Signer = &awssigner.RSA{}
@@ -40,12 +40,12 @@ func ExampleRSA() {
 		WithAlgorithm(types.SigningAlgorithmSpecRsassaPkcs1V15Sha256).
 		WithKeyID(kid)
 
-	signed, err := jws.Sign(payload, jwa.RS256, sv.WithContext(ctx))
+	signed, err := jws.Sign(payload, jws.WithKey(jwa.RS256, sv.WithContext(ctx)))
 	if err != nil {
 		panic(err.Error())
 	}
 
-	verified, err := jws.Verify(signed, jwa.RS256, sv.WithContext(ctx))
+	verified, err := jws.Verify(signed, jws.WithKey(jwa.RS256, sv.WithContext(ctx)))
 	if err != nil {
 		panic(err.Error())
 	}
@@ -99,12 +99,12 @@ func ExampleECDSA() {
 		WithKeyID(kid).
 		WithCache(NewDumbCache())
 
-	signed, err := jws.Sign(payload, jwa.ES256, sv.WithContext(ctx))
+	signed, err := jws.Sign(payload, jws.WithKey(jwa.ES256, sv.WithContext(ctx)))
 	if err != nil {
 		panic(err.Error())
 	}
 
-	verified, err := jws.Verify(signed, jwa.ES256, sv.WithContext(ctx))
+	verified, err := jws.Verify(signed, jws.WithKey(jwa.ES256, sv.WithContext(ctx)))
 	if err != nil {
 		panic(err.Error())
 	}

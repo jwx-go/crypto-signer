@@ -36,12 +36,12 @@ func ExampleRSA() {
     WithName(ks.String()).
     WithCache(NewDumbCache())
 
-  signed, err := jws.Sign(payload, jwa.RS256, s.WithContext(ctx))
+  signed, err := jws.Sign(payload, jws.WithKey(jwa.RS256, s.WithContext(ctx)))
   if err != nil {
     panic(err.Error())
   }
 
-  verified, err := jws.Verify(signed, jwa.RS256, s.WithContext(ctx))
+  verified, err := jws.Verify(signed, jws.WithKey(jwa.RS256, s.WithContext(ctx)))
   if err != nil {
     panic(err.Error())
   }

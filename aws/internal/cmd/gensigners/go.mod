@@ -1,4 +1,4 @@
-module github.com/jwx-go/crypto-signer/aws/internal/cmd/gensigners
+module github.com/jwx-go/crypto-signer/aws/v2/internal/cmd/gensigners
 
 go 1.17
 
